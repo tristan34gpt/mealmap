@@ -1,4 +1,7 @@
+"use client";
+
 import Button from "@/app/components/Button";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 function Signin() {
@@ -14,7 +17,10 @@ function Signin() {
           </Button>
         </Link>
         <div className="border-b border-[1px] border-gray-500 w-[600px]"></div>
-        <Button className={"w-[400px] h-[50px] text-white mt-5"}>
+        <Button
+          className={"w-[400px] h-[50px] text-white mt-5"}
+          click={() => signIn("google")}
+        >
           Se connecter avec Google
         </Button>
         <p className="mt-2">

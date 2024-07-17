@@ -1,6 +1,6 @@
 import React from "react";
 
-function Input({ placeholder, type, Icon, label, className }) {
+function Input({ placeholder, type, Icon, label, className, inputRef }) {
   return (
     <div className="relative flex flex-col items-start">
       {label && <label className="mb-1 text-gray-700">{label}</label>}
@@ -10,6 +10,7 @@ function Input({ placeholder, type, Icon, label, className }) {
           type={type}
           placeholder={placeholder}
           required
+          ref={inputRef}
         />
         <Icon className="absolute left-3 text-gray-500" size={20} />
       </div>
