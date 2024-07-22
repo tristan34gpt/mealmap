@@ -27,7 +27,7 @@ function Signin() {
     if (result.error) {
       setError("Email ou Mot de passe invalide");
     } else {
-      router.push("/");
+      router.push("/dashboard");
     }
   };
 
