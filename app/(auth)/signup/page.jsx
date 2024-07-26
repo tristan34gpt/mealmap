@@ -2,7 +2,6 @@
 import { useRef, useState } from "react";
 import { LockKeyhole, User, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { metronome } from "ldrs";
 import { Toaster, toast } from "react-hot-toast";
 
 import axios from "axios";
@@ -51,8 +50,6 @@ function SignupWithEmail() {
     }
   };
 
-  metronome.register();
-
   return (
     <div className="flex flex-col h-[100vh] justify-center items-center">
       <h1 className="text-3xl font-medium mb-[50px]">
@@ -95,9 +92,7 @@ function SignupWithEmail() {
           className="mb-5"
         />
         {loading ? (
-          <div>
-            <l-metronome size="20" speed="1.6" color="black"></l-metronome>
-          </div>
+          <div>Chargement...</div>
         ) : (
           <Button type="submit" className="w-[300px] h-[40px]">
             S'inscrire

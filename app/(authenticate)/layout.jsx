@@ -7,8 +7,6 @@ import AuthProvider from "../context/Authprovider";
 export default function RootLayout({ children }) {
   const { data: session, status } = useSession();
 
-  console.log(session);
-
   return (
     <html lang="fr">
       <body>

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { DayPicker } from "react-day-picker";
 import { format, eachDayOfInterval } from "date-fns";
-import { metronome } from "ldrs";
 import { fr } from "date-fns/locale";
 
 import InputCommand from "@/app/components/InputCommand";
@@ -37,8 +36,6 @@ function Dashboard() {
     }
   };
 
-  metronome.register();
-
   //Cycles
   useEffect(() => {
     console.log("Session status:", status);
@@ -66,11 +63,7 @@ function Dashboard() {
   }, [plannedMeals]);
 
   if (loading) {
-    return (
-      <div>
-        <l-metronome size="40" speed="1.6" color="black"></l-metronome>
-      </div>
-    );
+    return <div>chargement...</div>;
   }
 
   return (

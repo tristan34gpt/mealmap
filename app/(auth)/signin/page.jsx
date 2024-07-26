@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { LockKeyhole, Mail } from "lucide-react";
-import { metronome } from "ldrs";
 import { Toaster, toast } from "react-hot-toast";
 
 import Link from "next/link";
@@ -48,8 +47,6 @@ function Signin() {
     }
   };
 
-  metronome.register();
-
   return (
     <div className="flex flex-col h-[100vh] justify-center items-center">
       <h1 className="text-3xl font-medium mb-[40px]">Connectez-vous !</h1>
@@ -74,9 +71,7 @@ function Signin() {
           <p className="text-red-600 font-normal mb-1">{error}</p>
         )}
         {loading ? (
-          <div>
-            <l-metronome size="20" speed="1.6" color="black"></l-metronome>
-          </div>
+          <div>chargement...</div>
         ) : (
           <Button type="submit" className="w-[300px] h-[40px]">
             Se connecter
