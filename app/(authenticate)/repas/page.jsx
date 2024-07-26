@@ -1,15 +1,40 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import recipes from "@/data/recipes.json";
-import ModalMealInfos from "@/app/components/ModalMealInfos"; // Assurez-vous que le chemin est correct
+import ModalMealInfos from "@/app/components/ModalMealInfos";
 
 function Page() {
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      try {
+        const response = await fetch("/api/meal/fetchMeals");
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        const data = await response.json();
+        setMeals(data);
+      } catch (error) {
+        console.error("Error fetching meals:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeals();
+  }, []);
+
+  if (loading) {
+    return <div>Chargement...</div>;
+  }
 
   const handleOpenModal = (meal) => {
     setSelectedMeal(meal);
@@ -48,31 +73,32 @@ function Page() {
           }}
           className="swiper-container"
         >
-          {recipes.map(
-            (recipe, index) =>
-              recipe.types === "Repas" && (
-                <SwiperSlide
-                  key={index}
-                  className="flex justify-around items-center"
+          {
+            meals.map((recipe) => (
+              // recipe.types === "Repas" && (
+              <SwiperSlide
+                key={recipe.id}
+                className="flex justify-around items-center"
+              >
+                <div
+                  className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
+                  onClick={() => handleOpenModal(recipe)}
                 >
-                  <div
-                    className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
-                    onClick={() => handleOpenModal(recipe)}
-                  >
-                    <img
-                      src={recipe.img}
-                      alt={recipe.name}
-                      className="w-full h-[250px] object-cover"
-                    />
-                    <div className="text-center p-2">
-                      <p className="font-semibold text-primary-800">
-                        {recipe.name}
-                      </p>
-                    </div>
+                  <img
+                    src={recipe.image}
+                    alt={recipe.title}
+                    className="w-full h-[250px] object-cover"
+                  />
+                  <div className="text-center p-2">
+                    <p className="font-semibold text-primary-800">
+                      {recipe.title}
+                    </p>
                   </div>
-                </SwiperSlide>
-              )
-          )}
+                </div>
+              </SwiperSlide>
+            ))
+            // )
+          }
           <div className="swiper-button-prev hidden md:block"></div>
           <div className="swiper-button-next hidden md:block"></div>
           <div className="swiper-pagination mt-5"></div>{" "}

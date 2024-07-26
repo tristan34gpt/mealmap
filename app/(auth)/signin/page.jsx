@@ -1,35 +1,54 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Button from "@/app/components/Button";
-import Input from "@/app/components/Input";
-import { LockKeyhole, Mail } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { LockKeyhole, Mail } from "lucide-react";
+import { metronome } from "ldrs";
+import { Toaster, toast } from "react-hot-toast";
+
+import Link from "next/link";
+import Button from "@/app/components/Button";
+import Input from "@/app/components/Input";
 
 function Signin() {
+  // Variables
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  //Functions
   const handleSignIn = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (result.error) {
-      setError("Email ou Mot de passe invalide");
-    } else {
-      router.push("/dashboard");
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      setLoading(false);
+      toast.success("Vous êtes connecté");
+      if (result.error) {
+        setError("Email ou Mot de passe invalide");
+        setLoading(false);
+      } else {
+        router.push("/dashboard");
+        setLoading(false);
+      }
+    } catch (e) {
+      toast.error("Une erreur s'est produite, veuillez réessayer plus tard.");
+      setLoading(false);
     }
   };
+
+  metronome.register();
 
   return (
     <div className="flex flex-col h-[100vh] justify-center items-center">
@@ -54,9 +73,15 @@ function Signin() {
         {error !== "" && (
           <p className="text-red-600 font-normal mb-1">{error}</p>
         )}
-        <Button type="submit" className="w-[300px] h-[40px]">
-          Se connecter
-        </Button>
+        {loading ? (
+          <div>
+            <l-metronome size="20" speed="1.6" color="black"></l-metronome>
+          </div>
+        ) : (
+          <Button type="submit" className="w-[300px] h-[40px]">
+            Se connecter
+          </Button>
+        )}
       </form>
       <div className="border-b border-[1px] border-gray-300 w-[500px] mt-5 mb-5"></div>
       <button
@@ -66,12 +91,12 @@ function Signin() {
         Se connecter avec Google
       </button>
       <button className="bg-white border border-1 rounded-lg p-3 w-[400px] hover:bg-gray-200 transition-all">
-        Se connecter avec Ghithub
+        Se connecter avec GitHub
       </button>
 
       <p className="mt-2">
         Vous n’avez pas de compte ?{" "}
-        <Link href="/signup/signupWithEmail">
+        <Link href="/signup">
           <span className="text-primary-700">Inscrivez-vous</span>
         </Link>
       </p>

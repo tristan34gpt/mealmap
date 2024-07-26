@@ -1,36 +1,34 @@
 "use client";
+import { useRef, useState } from "react";
+import { LockKeyhole, User, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { metronome } from "ldrs";
+import { Toaster, toast } from "react-hot-toast";
 
-import { useRef } from "react";
+import axios from "axios";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
-import { LockKeyhole, User, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import axios from "axios";
 
 function SignupWithEmail() {
   // Variables
+  const [loading, setLoading] = useState(false);
+
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const router = useRouter();
 
-  // Function
+  // Functions
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const firstName = firstNameRef.current.value;
       const lastName = lastNameRef.current.value;
       const email = emailRef.current.value;
       const password = passwordRef.current.value;
-
-      console.log("Sending data to API:", {
-        firstName,
-        lastName,
-        email,
-        password,
-      }); // Log pour vérifier les données envoyées
 
       const response = await axios.post("/api/users", {
         firstName,
@@ -39,13 +37,21 @@ function SignupWithEmail() {
         password,
       });
 
-      console.log("Response from API:", response.data); // Log pour vérifier la réponse de l'API
-      router.push("/");
+      if (response.status === 200) {
+        toast.success("Bravo, vous venez de vous inscrire.");
+        router.push("/signin");
+      } else {
+        toast.error("Une erreur s'est produite, veuillez réessayer plus tard.");
+      }
     } catch (error) {
       console.error("Error during user creation: ", error);
-      // Gérer les erreurs ici
+      toast.error("Une erreur s'est produite, veuillez réessayer plus tard.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  metronome.register();
 
   return (
     <div className="flex flex-col h-[100vh] justify-center items-center">
@@ -88,9 +94,15 @@ function SignupWithEmail() {
           inputRef={passwordRef}
           className="mb-5"
         />
-        <Button className="w-[300px] h-[40px] mt-5" type="submit">
-          S'inscrire
-        </Button>
+        {loading ? (
+          <div>
+            <l-metronome size="20" speed="1.6" color="black"></l-metronome>
+          </div>
+        ) : (
+          <Button type="submit" className="w-[300px] h-[40px]">
+            S'inscrire
+          </Button>
+        )}
       </form>
       <p className="mt-5">
         Vous avez déjà un compte?{" "}

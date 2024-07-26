@@ -8,8 +8,8 @@ function NavBar() {
 
   const linkNavBar = [
     {
-      link: "/course",
-      label: "Course",
+      link: "/dashboard",
+      label: "Dashboard",
     },
     {
       link: "/profil",

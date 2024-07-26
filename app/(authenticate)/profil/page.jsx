@@ -22,7 +22,6 @@ function page() {
           placeholder="john@gmail.com"
           Icon={Mail}
           label="Mail"
-          className={"mx-5"}
           value={session.user.email}
           disabled={"disabled"}
         />

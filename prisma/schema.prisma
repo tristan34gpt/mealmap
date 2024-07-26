@@ -16,6 +16,7 @@ model User {
   image     String?
   sessions  Session[] @relation("UserSessions")
   accounts  Account[] @relation("UserAccounts")
+  plannedMeals PlannedMeal[] @relation("UserPlannedMeals")
 }
 
 model Account {
@@ -44,6 +45,46 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserSessions")
 }
+
+model PlannedMeal {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  mealId      String  
+  mealName    String
+  mealImage   String
+  plannedDate DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserPlannedMeals")
+}
+
+model Meal {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  recipe         String
+  ingredients    Ingredient[]
+  macronutrients Macronutrients
+  prepTime       String
+  image          String
+  tags           String[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+type Ingredient {
+  name     String
+  quantity Float
+  unit     String
+}
+
+type Macronutrients {
+  protein  Float
+  carbs    Float
+  fats     Float
+  calories Float
+}
+
+
 
 model VerificationToken {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId

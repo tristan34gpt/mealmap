@@ -1,7 +1,65 @@
-import React from "react";
+import React, { useState } from "react";
+import { DayPicker } from "react-day-picker";
+import { fr } from "date-fns/locale";
+import "react-day-picker/dist/style.css";
+import { format } from "date-fns";
+import Input from "./Input";
+import { Calendar, Timer } from "lucide-react";
+import Button from "./Button";
+import { useSession } from "next-auth/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 function ModalMealInfos({ isOpen, onClose, meal }) {
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showDayPicker, setShowDayPicker] = useState(false);
+  const { data: session } = useSession(); // Obtenez la session
+
   if (!isOpen) return null;
+
+  const handleSaveMeal = async () => {
+    if (meal && selectedDate) {
+      try {
+        const userId = session?.user?.id; // Assurez-vous que l'utilisateur est authentifié et que l'ID est disponible
+
+        if (!userId) {
+          alert("User not authenticated");
+          return;
+        }
+
+        const response = await fetch("/api/meal/plannedMeals", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: session.user.id, // Passez l'ID de l'utilisateur authentifié
+            mealId: meal.id,
+            mealName: meal.title,
+            mealImage: meal.image,
+            plannedDate: selectedDate,
+          }),
+        });
+
+        if (response.ok) {
+          alert("Meal planned successfully!");
+          onClose();
+        } else {
+          alert("Failed to plan meal.");
+        }
+      } catch (error) {
+        console.error("Error planning meal:", error);
+      }
+    }
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setShowDayPicker(false);
+  };
 
   return (
     <div className="fixed z-50 inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
@@ -12,24 +70,95 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
         >
           Fermer
         </button>
-        <h2 className="text-2xl font-semibold mb-4">{meal.name}</h2>
+        <h2 className="text-2xl font-semibold mb-4">{meal.title}</h2>
         <img
-          src={meal.img}
-          alt={meal.name}
+          src={meal.image}
+          alt={meal.title}
           className="w-full h-48 object-cover rounded mb-4"
         />
-        <p className="mb-2">
-          <strong>Ingrédients:</strong>
-        </p>
-        <ul className="list-disc list-inside mb-4">
-          {meal.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-        <div className="border-b-[1px] m-2 "></div>
-        <p>
-          <strong>Calories:</strong> {meal.calories}
-        </p>
+        <div className="border-b-[1px]">
+          <p className="mb-2">{meal.description}</p>
+        </div>
+        <div className="flex  items-center mb-2 mt-5">
+          <Timer className="w-[15px]" />
+          <p className="text-[12px] ml-1">{meal.prepTime}</p>
+        </div>
+
+        <Swiper
+          modules={[Navigation, Pagination]}
+          navigation
+          spaceBetween={0}
+          slidesPerView={1}
+          centeredSlides={true}
+          className="w-full"
+        >
+          <SwiperSlide className="flex justify-center items-center">
+            <div className="w-full h-[200px] flex flex-col justify-center items-center">
+              <p className="mb-2">
+                <strong>Ingrédients</strong>
+              </p>
+              <ul className="list-disc list-inside mb-4">
+                {meal.ingredients.map((ingredient, index) => (
+                  <li key={index}>
+                    {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </SwiperSlide>
+
+          <SwiperSlide className="flex justify-center items-center w-full ">
+            <div className="w-full h-[200px] flex flex-col justify-center items-center">
+              <p>
+                <strong>Macronutriments</strong>
+              </p>
+              <p>Protéines: {meal.macronutrients.protein}g</p>
+              <p>Glucides: {meal.macronutrients.carbs}g</p>
+              <p>Lipides: {meal.macronutrients.fats}g</p>
+              <p>Calories: {meal.macronutrients.calories}</p>
+            </div>
+          </SwiperSlide>
+
+          <SwiperSlide className="flex justify-center items-center ">
+            <div className="w-full h-[200px] flex flex-col justify-center items-center">
+              <p className="mb-2">
+                <strong>Recette</strong>
+              </p>
+              <p className="text-center"> {meal.recipe}</p>
+            </div>
+          </SwiperSlide>
+        </Swiper>
+
+        <div className="mt-4">
+          <div className="relative rounded-md">
+            <Input
+              type="text"
+              placeholder="Sélectionnez une date"
+              Icon={Calendar}
+              label="Sélectionnez une date"
+              value={
+                selectedDate ? format(selectedDate, "PPP", { locale: fr }) : ""
+              }
+              onClick={() => setShowDayPicker(true)}
+            />
+            {showDayPicker && (
+              <div className="absolute mb-2 p-2 z-50 bottom-10 bg-white border border-gray-300 rounded-md shadow-lg">
+                <DayPicker
+                  selected={selectedDate}
+                  onSelect={handleDateChange}
+                  locale={fr}
+                  mode="single"
+                  className="p-2"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-4">
+          <Button click={handleSaveMeal} className="w-[150px] h-[30px]">
+            Enregistrer
+          </Button>
+        </div>
       </div>
     </div>
   );
