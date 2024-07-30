@@ -3,7 +3,17 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function POST(req) {
-  const { userId, mealId, mealName, mealImage, plannedDate } = await req.json();
+  const {
+    userId,
+    mealId,
+    mealName,
+    mealImage,
+    plannedDate,
+    ingredients,
+    recipe,
+    description,
+    macronutrients,
+  } = await req.json();
 
   try {
     const plannedMeal = await prisma.plannedMeal.create({
@@ -13,6 +23,10 @@ export async function POST(req) {
         mealName,
         mealImage,
         plannedDate: new Date(plannedDate),
+        ingredients,
+        recipe,
+        description,
+        macronutrients,
       },
     });
     return new Response(JSON.stringify(plannedMeal), { status: 200 });

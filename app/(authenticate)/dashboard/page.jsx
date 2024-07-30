@@ -2,7 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { DayPicker } from "react-day-picker";
-import { format, eachDayOfInterval } from "date-fns";
+import {
+  format,
+  eachDayOfInterval,
+  isWithinInterval,
+  isSameDay,
+} from "date-fns";
 import { fr } from "date-fns/locale";
 
 import InputCommand from "@/app/components/InputCommand";
@@ -10,41 +15,110 @@ import Meal from "@/app/components/Meal";
 import "react-day-picker/dist/style.css";
 
 function Dashboard() {
-  //Variables
+  // Variables
   const { data: session, status } = useSession();
 
   const [range, setRange] = useState({ from: null, to: null });
   const [plannedMeals, setPlannedMeals] = useState([]);
+  const [filteredMeals, setFilteredMeals] = useState([]);
+  const [macronutrientsTotal, setMacronutrientsTotal] = useState({
+    protein: 0,
+    carbs: 0,
+    fats: 0,
+    calories: 0,
+  });
   const [loading, setLoading] = useState(true);
+  const [aggregatedIngredients, setAggregatedIngredients] = useState([]);
 
   const selectedDates =
     range.from && range.to
       ? eachDayOfInterval({ start: range.from, end: range.to })
       : [];
 
-  // Accès à la première et à la dernière date sélectionnée
-  const firstSelectedDate = selectedDates.length > 0 ? selectedDates[0] : null;
-  const lastSelectedDate =
-    selectedDates.length > 0 ? selectedDates[selectedDates.length - 1] : null;
+  // Functions
 
-  //Functions
-  const handleDateChange = (range) => {
-    setRange(range);
-    if (range && plannedMeals) {
-      console.log(range);
-      console.log(plannedMeals);
+  const isDateInRange = (date, range) => {
+    if (!range.from || !range.to) {
+      return false;
     }
+    if (isSameDay(range.from, range.to)) {
+      return isSameDay(date, range.from); // Si une seule date est sélectionnée, vérifier l'égalité
+    }
+    return isWithinInterval(date, { start: range.from, end: range.to });
   };
 
-  //Cycles
+  const handleDateChange = (range) => {
+    console.log("handleDateChange called with range:", range);
+    console.log("plannedMeals state:", plannedMeals);
+
+    if (range && plannedMeals.length > 0) {
+      const filteredMeals = plannedMeals.filter((meal) => {
+        const plannedDate = new Date(meal.plannedDate);
+        return isDateInRange(plannedDate, range);
+      });
+
+      console.log("Filtered meals:", filteredMeals);
+
+      const totalMacronutrients = filteredMeals.reduce(
+        (acc, meal) => {
+          acc.protein += meal.macronutrients.protein;
+          acc.carbs += meal.macronutrients.carbs;
+          acc.fats += meal.macronutrients.fats;
+          acc.calories += meal.macronutrients.calories;
+          return acc;
+        },
+        { protein: 0, carbs: 0, fats: 0, calories: 0 }
+      );
+
+      const ingredients = aggregateIngredients(filteredMeals);
+
+      setFilteredMeals(filteredMeals);
+      setMacronutrientsTotal(totalMacronutrients);
+      setAggregatedIngredients(ingredients);
+    } else {
+      console.log(
+        "Condition not met. Resetting filteredMeals to plannedMeals."
+      );
+      setFilteredMeals(plannedMeals);
+      setMacronutrientsTotal({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+      setAggregatedIngredients([]);
+    }
+
+    setRange(range);
+  };
+
+  const aggregateIngredients = (plannedMeals) => {
+    const ingredientMap = {};
+
+    plannedMeals.forEach((meal) => {
+      meal.ingredients.forEach((ingredient) => {
+        const key = `${ingredient.name}-${ingredient.unit}`;
+        if (ingredientMap[key]) {
+          ingredientMap[key].quantity += ingredient.quantity;
+        } else {
+          ingredientMap[key] = { ...ingredient };
+        }
+      });
+    });
+
+    return Object.values(ingredientMap);
+  };
+
+  // Cycles
   useEffect(() => {
-    console.log("Session status:", status);
     if (status === "authenticated") {
       setLoading(true); // Indiquer que le chargement commence
       fetch("/api/meal/fetchPlannedMeal")
         .then((response) => response.json())
         .then((data) => {
-          setPlannedMeals(data);
+          console.log("Fetched data:", data);
+          // Supposons que data est un objet avec la clé 'plannedMeals' qui contient le tableau des repas
+          if (data && Array.isArray(data.plannedMeals)) {
+            setPlannedMeals(data.plannedMeals);
+            setFilteredMeals(data.plannedMeals); // Initialiser les repas filtrés avec tous les repas
+          } else {
+            console.error("Unexpected response structure:", data);
+          }
           setLoading(false); // Définir setLoading(false) ici
         })
         .catch((error) => {
@@ -57,13 +131,11 @@ function Dashboard() {
   }, [session, status]);
 
   useEffect(() => {
-    if (plannedMeals.length > 0) {
-      console.log("PlannedMeals updated:", plannedMeals);
-    }
+    console.log("plannedMeals updated:", plannedMeals);
   }, [plannedMeals]);
 
   if (loading) {
-    return <div>chargement...</div>;
+    return <div>Chargement...</div>;
   }
 
   return (
@@ -72,7 +144,15 @@ function Dashboard() {
         {/* Info purchase */}
         <div>
           <h1 className="font-semibold mb-5">Vos courses</h1>
-          <InputCommand label={"poulet"} />
+          {aggregatedIngredients.length > 0 ? (
+            aggregatedIngredients.map((ingredient, index) => (
+              <div key={index} className="my-2">
+                <p>{` ${ingredient.quantity} ${ingredient.name} (${ingredient.unit})`}</p>
+              </div>
+            ))
+          ) : (
+            <p>Pas d'ingrédients pour les dates sélectionnées.</p>
+          )}
         </div>
         <div>
           <DayPicker
@@ -89,28 +169,33 @@ function Dashboard() {
         <div>
           {selectedDates.length > 0 && <h3>Dates sélectionnées :</h3>}
           <div className="flex">
-            {firstSelectedDate && (
-              <p>Du {format(firstSelectedDate, "PPP", { locale: fr })} </p>
-            )}
-            {lastSelectedDate && (
-              <p className="ml-1">
-                au {format(lastSelectedDate, "PPP", { locale: fr })}
+            {selectedDates.length > 0 && (
+              <p>
+                Du {format(selectedDates[0], "PPP", { locale: fr })} au{" "}
+                {format(selectedDates[selectedDates.length - 1], "PPP", {
+                  locale: fr,
+                })}
               </p>
             )}
           </div>
-          {selectedDates.length > 0 ? (
-            <Meal plannedMeals={plannedMeals} />
-          ) : (
-            <h2>Sélectionnez des dates pour voir vos repas</h2>
-          )}
+          <div className="flex">
+            {selectedDates.length > 0 ? (
+              filteredMeals.map((meal, index) => (
+                <Meal key={index} img={meal.mealImage} title={meal.mealName} />
+              ))
+            ) : (
+              <h2>Sélectionnez des dates pour voir vos repas</h2>
+            )}
+          </div>
         </div>
         {selectedDates.length > 0 && (
           <div className="m-5 text-center border-l-[2px] p-5">
             <h3 className="font-semibold mb-2">Info nutriments</h3>
             <ul>
-              <li>Protéin : 200gr</li>
-              <li>Lipides : 70gr</li>
-              <li>Glucide : 150gr</li>
+              <li>Protéines : {macronutrientsTotal.protein}g</li>
+              <li>Lipides : {macronutrientsTotal.fats}g</li>
+              <li>Glucides : {macronutrientsTotal.carbs}g</li>
+              <li>Calories : {macronutrientsTotal.calories}</li>
             </ul>
           </div>
         )}

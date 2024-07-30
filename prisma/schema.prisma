@@ -49,13 +49,19 @@ model Session {
 model PlannedMeal {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   userId      String   @db.ObjectId
-  mealId      String  
+  mealId      String
   mealName    String
   mealImage   String
   plannedDate DateTime
+  ingredients Ingredient[]
+  recipe      String
+  description String
+  macronutrients Macronutrients
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserPlannedMeals")
 }
+
+
 
 model Meal {
   id             String         @id @default(auto()) @map("_id") @db.ObjectId

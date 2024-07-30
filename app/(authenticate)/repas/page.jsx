@@ -59,7 +59,7 @@ function Page() {
           navigation
           pagination={{ clickable: true }}
           spaceBetween={40}
-          slidesPerView={3}
+          slidesPerView={1}
           centeredSlides={true}
           breakpoints={{
             1024: {

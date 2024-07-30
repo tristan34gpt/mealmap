@@ -17,7 +17,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const { data: session } = useSession(); // Obtenez la session
-
+  console.log(meal);
   if (!isOpen) return null;
 
   const handleSaveMeal = async () => {
@@ -41,6 +41,10 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
             mealName: meal.title,
             mealImage: meal.image,
             plannedDate: selectedDate,
+            ingredients: meal.ingredients,
+            recipe: meal.recipe,
+            description: meal.description,
+            macronutrients: meal.macronutrients,
           }),
         });
 
@@ -140,6 +144,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
                 selectedDate ? format(selectedDate, "PPP", { locale: fr }) : ""
               }
               onClick={() => setShowDayPicker(true)}
+              onChange={() => {}}
             />
             {showDayPicker && (
               <div className="absolute mb-2 p-2 z-50 bottom-10 bg-white border border-gray-300 rounded-md shadow-lg">
