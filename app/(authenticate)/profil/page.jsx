@@ -2,16 +2,23 @@
 
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
+import ModalProfile from "@/app/components/ModalProfile";
+
 import { LockKeyhole, Mail, User } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useState } from "react";
 
 function page() {
   const { data: session, status } = useSession();
+  const [open, setOpen] = useState(false);
   console.log(session);
   if (status === "loading") {
     return <div>Loading...</div>;
   }
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
 
   return (
     <div className="mt-[70px]">
@@ -50,8 +57,18 @@ function page() {
         />
       </div>
       <div className="flex justify-center items-center">
-        <Button className={"w-[300px] h-[30px] mt-[30px]"}>Modifier</Button>
+        <Button
+          click={() => {
+            setOpen(true);
+          }}
+          className={"w-[300px] h-[30px] mt-[30px]"}
+        >
+          Modifier
+        </Button>
       </div>
+      {open && (
+        <ModalProfile isOpen={Boolean(open)} onClose={handleCloseModal} />
+      )}
     </div>
   );
 }
