@@ -16,10 +16,11 @@ import "swiper/css/pagination";
 function ModalMealInfos({ isOpen, onClose, meal }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDayPicker, setShowDayPicker] = useState(false);
+  const [number, setNumber] = useState(1);
+
   const { data: session } = useSession(); // Obtenez la session
   console.log(meal);
   if (!isOpen) return null;
-
   const handleSaveMeal = async () => {
     if (meal && selectedDate) {
       try {
@@ -41,7 +42,12 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
             mealName: meal.title,
             mealImage: meal.image,
             plannedDate: selectedDate,
-            ingredients: meal.ingredients,
+            ingredients: meal.ingredients.map((ingredient) => ({
+              name: ingredient.name,
+              quantity: ingredient.quantity * number,
+              unit: ingredient.unit,
+            })),
+            number: parseInt(number, 10),
             recipe: meal.recipe,
             description: meal.description,
             macronutrients: meal.macronutrients,
@@ -87,7 +93,21 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           <Timer className="w-[15px]" />
           <p className="text-[12px] ml-1">{meal.prepTime}</p>
         </div>
-
+        <div className="flex flex-col">
+          <label className="text-[15px] mb-2" htmlFor="number">
+            Pour {number} personne
+          </label>
+          <input
+            type="number"
+            id="number"
+            min="1"
+            className={`bg-[#F9FAFB] border-[1px] w-[100px] h-[30px] rounded-[8px] pl-10 pr-4 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 `}
+            value={number}
+            onChange={(e) => {
+              setNumber(e.target.value);
+            }}
+          />
+        </div>
         <Swiper
           modules={[Navigation, Pagination]}
           navigation
@@ -104,7 +124,8 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
               <ul className="list-disc list-inside mb-4">
                 {meal.ingredients.map((ingredient, index) => (
                   <li key={index}>
-                    {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                    {ingredient.name} - {ingredient.quantity * number}
+                    {ingredient.unit}
                   </li>
                 ))}
               </ul>

@@ -10,6 +10,7 @@ export async function POST(req) {
     mealImage,
     plannedDate,
     ingredients,
+    number,
     recipe,
     description,
     macronutrients,
@@ -26,6 +27,7 @@ export async function POST(req) {
         ingredients,
         recipe,
         description,
+        number,
         macronutrients,
       },
     });

@@ -55,6 +55,7 @@ model PlannedMeal {
   plannedDate DateTime
   ingredients Ingredient[]
   recipe      String
+  number      Int 
   description String
   macronutrients Macronutrients
 

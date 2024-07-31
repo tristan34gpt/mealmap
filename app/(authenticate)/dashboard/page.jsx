@@ -11,6 +11,8 @@ import {
 import { fr } from "date-fns/locale";
 
 import Meal from "@/app/components/Meal";
+import SkeltonDashboard from "@/app/components/skeleton/SkeltonDashboard";
+
 import "react-day-picker/dist/style.css";
 
 function Dashboard() {
@@ -133,7 +135,7 @@ function Dashboard() {
   }, [plannedMeals]);
 
   if (loading) {
-    return <div>Chargement...</div>;
+    return <SkeltonDashboard />;
   }
 
   return (
@@ -167,7 +169,6 @@ function Dashboard() {
         <div>
           {selectedDates.length > 0 ? (
             <>
-              <h3>Dates sélectionnées :</h3>
               <div className="flex">
                 <p>
                   Du {format(selectedDates[0], "PPP", { locale: fr })} au{" "}

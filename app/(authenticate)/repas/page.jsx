@@ -5,8 +5,8 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import recipes from "@/data/recipes.json";
 import ModalMealInfos from "@/app/components/ModalMealInfos";
+import SkeletonMeals from "@/app/components/skeleton/SkeletonMeals";
 
 function Page() {
   const [selectedMeal, setSelectedMeal] = useState(null);
@@ -34,7 +34,7 @@ function Page() {
   }, []);
 
   if (loading) {
-    return <div>Chargement...</div>;
+    return <SkeletonMeals />;
   }
 
   const handleOpenModal = (meal) => {

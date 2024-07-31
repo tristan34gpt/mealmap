@@ -1,6 +1,4 @@
-import React from "react";
-
-function SkeletonLoader() {
+function SkeletonMeals() {
   return (
     <div className="p-5">
       <div className="">
@@ -32,4 +30,4 @@ function SkeletonLoader() {
   );
 }
 
-export default SkeletonLoader;
+export default SkeletonMeals;
