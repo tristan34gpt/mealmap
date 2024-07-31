@@ -73,6 +73,7 @@ model Meal {
   prepTime       String
   image          String
   tags           String[]
+  type           String 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }

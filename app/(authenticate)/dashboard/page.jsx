@@ -10,7 +10,6 @@ import {
 } from "date-fns";
 import { fr } from "date-fns/locale";
 
-import InputCommand from "@/app/components/InputCommand";
 import Meal from "@/app/components/Meal";
 import "react-day-picker/dist/style.css";
 
@@ -33,15 +32,17 @@ function Dashboard() {
   const selectedDates =
     range.from && range.to
       ? eachDayOfInterval({ start: range.from, end: range.to })
+      : range.from
+      ? [range.from]
       : [];
 
   // Functions
 
   const isDateInRange = (date, range) => {
-    if (!range.from || !range.to) {
+    if (!range.from) {
       return false;
     }
-    if (isSameDay(range.from, range.to)) {
+    if (isSameDay(range.from, range.to) || !range.to) {
       return isSameDay(date, range.from); // Si une seule date est sélectionnée, vérifier l'égalité
     }
     return isWithinInterval(date, { start: range.from, end: range.to });
@@ -51,7 +52,7 @@ function Dashboard() {
     console.log("handleDateChange called with range:", range);
     console.log("plannedMeals state:", plannedMeals);
 
-    if (range && plannedMeals.length > 0) {
+    if (range.from && plannedMeals.length > 0) {
       const filteredMeals = plannedMeals.filter((meal) => {
         const plannedDate = new Date(meal.plannedDate);
         return isDateInRange(plannedDate, range);
@@ -76,10 +77,8 @@ function Dashboard() {
       setMacronutrientsTotal(totalMacronutrients);
       setAggregatedIngredients(ingredients);
     } else {
-      console.log(
-        "Condition not met. Resetting filteredMeals to plannedMeals."
-      );
-      setFilteredMeals(plannedMeals);
+      console.log("Condition not met. Resetting filteredMeals to empty.");
+      setFilteredMeals([]);
       setMacronutrientsTotal({ protein: 0, carbs: 0, fats: 0, calories: 0 });
       setAggregatedIngredients([]);
     }
@@ -115,7 +114,6 @@ function Dashboard() {
           // Supposons que data est un objet avec la clé 'plannedMeals' qui contient le tableau des repas
           if (data && Array.isArray(data.plannedMeals)) {
             setPlannedMeals(data.plannedMeals);
-            setFilteredMeals(data.plannedMeals); // Initialiser les repas filtrés avec tous les repas
           } else {
             console.error("Unexpected response structure:", data);
           }
@@ -167,26 +165,34 @@ function Dashboard() {
       {/* Info meal */}
       <div className="flex flex-col md:flex-row justify-between items-center">
         <div>
-          {selectedDates.length > 0 && <h3>Dates sélectionnées :</h3>}
-          <div className="flex">
-            {selectedDates.length > 0 && (
-              <p>
-                Du {format(selectedDates[0], "PPP", { locale: fr })} au{" "}
-                {format(selectedDates[selectedDates.length - 1], "PPP", {
-                  locale: fr,
-                })}
-              </p>
-            )}
-          </div>
-          <div className="flex">
-            {selectedDates.length > 0 ? (
-              filteredMeals.map((meal, index) => (
-                <Meal key={index} img={meal.mealImage} title={meal.mealName} />
-              ))
-            ) : (
-              <h2>Sélectionnez des dates pour voir vos repas</h2>
-            )}
-          </div>
+          {selectedDates.length > 0 ? (
+            <>
+              <h3>Dates sélectionnées :</h3>
+              <div className="flex">
+                <p>
+                  Du {format(selectedDates[0], "PPP", { locale: fr })} au{" "}
+                  {format(selectedDates[selectedDates.length - 1], "PPP", {
+                    locale: fr,
+                  })}
+                </p>
+              </div>
+              <div className="flex">
+                {filteredMeals.length > 0 ? (
+                  filteredMeals.map((meal, index) => (
+                    <Meal
+                      key={index}
+                      img={meal.mealImage}
+                      title={meal.mealName}
+                    />
+                  ))
+                ) : (
+                  <h2>Pas de repas pour ces jours sélectionnés</h2>
+                )}
+              </div>
+            </>
+          ) : (
+            <h2>Sélectionnez des dates pour voir vos repas</h2>
+          )}
         </div>
         {selectedDates.length > 0 && (
           <div className="m-5 text-center border-l-[2px] p-5">

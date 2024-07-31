@@ -22,6 +22,7 @@ function Page() {
         }
         const data = await response.json();
         setMeals(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching meals:", error);
       } finally {
@@ -73,32 +74,31 @@ function Page() {
           }}
           className="swiper-container"
         >
-          {
-            meals.map((recipe) => (
-              // recipe.types === "Repas" && (
-              <SwiperSlide
-                key={recipe.id}
-                className="flex justify-around items-center"
-              >
-                <div
-                  className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
-                  onClick={() => handleOpenModal(recipe)}
+          {meals.map(
+            (recipe) =>
+              recipe.type === "repas" && (
+                <SwiperSlide
+                  key={recipe.id}
+                  className="flex justify-around items-center"
                 >
-                  <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    className="w-full h-[250px] object-cover"
-                  />
-                  <div className="text-center p-2">
-                    <p className="font-semibold text-primary-800">
-                      {recipe.title}
-                    </p>
+                  <div
+                    className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
+                    onClick={() => handleOpenModal(recipe)}
+                  >
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="w-full h-[250px] object-cover"
+                    />
+                    <div className="text-center p-2">
+                      <p className="font-semibold text-primary-800">
+                        {recipe.title}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            ))
-            // )
-          }
+                </SwiperSlide>
+              )
+          )}
           <div className="swiper-button-prev hidden md:block"></div>
           <div className="swiper-button-next hidden md:block"></div>
           <div className="swiper-pagination mt-5"></div>{" "}
@@ -128,25 +128,25 @@ function Page() {
           }}
           className="swiper-container py-10"
         >
-          {recipes.map(
-            (recipe, index) =>
-              recipe.types === "Petit Déjeuner" && (
+          {meals.map(
+            (recipe) =>
+              recipe.type === "déjeuner" && (
                 <SwiperSlide
-                  key={index}
-                  className="flex justify-center items-center"
+                  key={recipe.id}
+                  className="flex justify-around items-center"
                 >
                   <div
                     className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
                     onClick={() => handleOpenModal(recipe)}
                   >
                     <img
-                      src={recipe.img}
-                      alt={recipe.name}
+                      src={recipe.image}
+                      alt={recipe.title}
                       className="w-full h-[250px] object-cover"
                     />
                     <div className="text-center p-2">
-                      <p className="font-semibold text-gray-800">
-                        {recipe.name}
+                      <p className="font-semibold text-primary-800">
+                        {recipe.title}
                       </p>
                     </div>
                   </div>
@@ -181,25 +181,25 @@ function Page() {
           }}
           className="swiper-container py-10"
         >
-          {recipes.map(
-            (recipe, index) =>
-              recipe.types === "Repas" && (
+          {meals.map(
+            (recipe) =>
+              recipe.type === "pique-nique" && (
                 <SwiperSlide
-                  key={index}
-                  className="flex justify-center items-center"
+                  key={recipe.id}
+                  className="flex justify-around items-center"
                 >
                   <div
                     className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
                     onClick={() => handleOpenModal(recipe)}
                   >
                     <img
-                      src={recipe.img}
-                      alt={recipe.name}
+                      src={recipe.image}
+                      alt={recipe.title}
                       className="w-full h-[250px] object-cover"
                     />
                     <div className="text-center p-2">
-                      <p className="font-semibold text-gray-800">
-                        {recipe.name}
+                      <p className="font-semibold text-primary-800">
+                        {recipe.title}
                       </p>
                     </div>
                   </div>
