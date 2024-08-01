@@ -14,6 +14,7 @@ import Meal from "@/app/components/Meal";
 import SkeltonDashboard from "@/app/components/skeleton/SkeltonDashboard";
 
 import "react-day-picker/dist/style.css";
+import ModalMealDashboard from "@/app/components/ModalMealDashboard";
 
 function Dashboard() {
   // Variables
@@ -30,6 +31,8 @@ function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [aggregatedIngredients, setAggregatedIngredients] = useState([]);
+  const [selectedMeal, setSelectedMeal] = useState(null);
+  const [targetMeal, setTargetMeal] = useState([]);
 
   const selectedDates =
     range.from && range.to
@@ -50,34 +53,60 @@ function Dashboard() {
     return isWithinInterval(date, { start: range.from, end: range.to });
   };
 
+  const handleModal = () => {
+    setSelectedMeal(!selectedMeal);
+  };
+
   const handleDateChange = (range) => {
     console.log("handleDateChange called with range:", range);
     console.log("plannedMeals state:", plannedMeals);
 
     if (range.from && plannedMeals.length > 0) {
-      const filteredMeals = plannedMeals.filter((meal) => {
+      const uniqueMeals = new Map();
+      const totalMacronutrients = {
+        protein: 0,
+        carbs: 0,
+        fats: 0,
+        calories: 0,
+      };
+      const ingredientMap = {};
+
+      plannedMeals.forEach((meal) => {
         const plannedDate = new Date(meal.plannedDate);
-        return isDateInRange(plannedDate, range);
+
+        if (isDateInRange(plannedDate, range)) {
+          if (uniqueMeals.has(meal.mealId)) {
+            // Aggregating macronutrients if a meal is repeated
+            const existingMeal = uniqueMeals.get(meal.mealId);
+            existingMeal.macronutrients.protein += meal.macronutrients.protein;
+            existingMeal.macronutrients.carbs += meal.macronutrients.carbs;
+            existingMeal.macronutrients.fats += meal.macronutrients.fats;
+            existingMeal.macronutrients.calories +=
+              meal.macronutrients.calories;
+            existingMeal.number += meal.number;
+          } else {
+            uniqueMeals.set(meal.mealId, { ...meal });
+          }
+
+          meal.ingredients.forEach((ingredient) => {
+            const key = `${ingredient.name}-${ingredient.unit}`;
+            if (ingredientMap[key]) {
+              ingredientMap[key].quantity += ingredient.quantity;
+            } else {
+              ingredientMap[key] = { ...ingredient };
+            }
+          });
+
+          totalMacronutrients.protein += meal.macronutrients.protein;
+          totalMacronutrients.carbs += meal.macronutrients.carbs;
+          totalMacronutrients.fats += meal.macronutrients.fats;
+          totalMacronutrients.calories += meal.macronutrients.calories;
+        }
       });
 
-      console.log("Filtered meals:", filteredMeals);
-
-      const totalMacronutrients = filteredMeals.reduce(
-        (acc, meal) => {
-          acc.protein += meal.macronutrients.protein;
-          acc.carbs += meal.macronutrients.carbs;
-          acc.fats += meal.macronutrients.fats;
-          acc.calories += meal.macronutrients.calories;
-          return acc;
-        },
-        { protein: 0, carbs: 0, fats: 0, calories: 0 }
-      );
-
-      const ingredients = aggregateIngredients(filteredMeals);
-
-      setFilteredMeals(filteredMeals);
+      setFilteredMeals(Array.from(uniqueMeals.values()));
       setMacronutrientsTotal(totalMacronutrients);
-      setAggregatedIngredients(ingredients);
+      setAggregatedIngredients(Object.values(ingredientMap));
     } else {
       console.log("Condition not met. Resetting filteredMeals to empty.");
       setFilteredMeals([]);
@@ -134,6 +163,10 @@ function Dashboard() {
     console.log("plannedMeals updated:", plannedMeals);
   }, [plannedMeals]);
 
+  useEffect(() => {
+    console.log(filteredMeals);
+  }, [filteredMeals]);
+
   if (loading) {
     return <SkeltonDashboard />;
   }
@@ -180,11 +213,23 @@ function Dashboard() {
               <div className="flex">
                 {filteredMeals.length > 0 ? (
                   filteredMeals.map((meal, index) => (
-                    <Meal
+                    <div
+                      className="cursor-pointer"
                       key={index}
-                      img={meal.mealImage}
-                      title={meal.mealName}
-                    />
+                      onClick={() => {
+                        setTargetMeal(meal);
+                        console.log(meal);
+                      }}
+                    >
+                      <Meal
+                        img={meal.mealImage}
+                        title={meal.mealName}
+                        quantity={meal.number}
+                        click={() => {
+                          handleModal();
+                        }}
+                      />
+                    </div>
                   ))
                 ) : (
                   <h2>Pas de repas pour ces jours sélectionnés</h2>
@@ -207,6 +252,16 @@ function Dashboard() {
           </div>
         )}
       </div>
+      {selectedMeal &&
+        filteredMeals.length > 0 &&
+        filteredMeals.map((meal, index) => (
+          <ModalMealDashboard
+            isOpen={Boolean(selectedMeal)}
+            onClose={handleModal}
+            meal={targetMeal}
+            key={index}
+          />
+        ))}
     </div>
   );
 }

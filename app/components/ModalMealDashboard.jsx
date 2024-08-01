@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DayPicker } from "react-day-picker";
+// import { DayPicker } from "react-day-picker";
 import { fr } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
@@ -14,11 +14,13 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Loader from "./Loader";
 
-function ModalMealInfos({ isOpen, onClose, meal }) {
+function ModalMealDashboard({ isOpen, onClose, meal }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const [number, setNumber] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  console.log(meal);
 
   const { data: session } = useSession(); // Obtenez la session
   console.log(meal);
@@ -93,10 +95,10 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           Fermer
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4">{meal.title}</h2>
+        <h2 className="text-2xl font-semibold mb-4">{meal.mealName}</h2>
         <img
-          src={meal.image}
-          alt={meal.title}
+          src={meal.mealImage}
+          alt={meal.mealName}
           className="w-full h-48 object-cover rounded mb-4"
         />
         <div className="border-b-[1px]">
@@ -108,18 +110,18 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
         </div>
         <div className="flex flex-col">
           <label className="text-[15px] mb-2" htmlFor="number">
-            Pour {number} personne
+            Pour {meal.number} personne
           </label>
-          <input
+          {/* <input
             type="number"
             id="number"
             min="1"
             className={`bg-[#F9FAFB] border-[1px] w-[100px] h-[30px] rounded-[8px] pl-10 pr-4 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 `}
-            value={number}
+            value={meal.number}
             onChange={(e) => {
               setNumber(e.target.value);
             }}
-          />
+          /> */}
         </div>
         <Swiper
           modules={[Navigation, Pagination]}
@@ -167,7 +169,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           </SwiperSlide>
         </Swiper>
 
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <div className="relative rounded-md">
             <Input
               type="text"
@@ -192,8 +194,8 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
               </div>
             )}
           </div>
-        </div>
-        <div className="mt-4">
+        </div> */}
+        {/* <div className="mt-4">
           {loading ? (
             <div className="w-full flex justify-center">
               <Loader />
@@ -203,10 +205,10 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
               Enregistrer
             </Button>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
 }
 
-export default ModalMealInfos;
+export default ModalMealDashboard;
