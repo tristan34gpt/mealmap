@@ -80,7 +80,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
 
   return (
     <div className="fixed z-50 inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
+      <div className="bg-white rounded-lg shadow-lg p-6  overflow-y-auto  custom-scrollbar w-full md:h-[800px] sm:h-[700px] h-[400px] max-w-md mx-4">
         <button
           className={` ${
             loading
@@ -123,31 +123,31 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
         </div>
         <Swiper
           modules={[Navigation, Pagination]}
-          navigation
           spaceBetween={0}
           slidesPerView={1}
           centeredSlides={true}
           className="w-full"
+          pagination={{ clickable: true }}
         >
           <SwiperSlide className="flex justify-center items-center">
             <div className="w-full h-[200px] flex flex-col justify-center items-center">
               <p className="mb-2">
                 <strong>Ingrédients</strong>
               </p>
-              <ul className="list-disc list-inside mb-4">
+              <div className=" flex flex-col justify-center items-center mb-4 w-full">
                 {meal.ingredients.map((ingredient, index) => (
-                  <li key={index}>
+                  <div key={index} className="">
                     {ingredient.name} - {ingredient.quantity * number}
                     {ingredient.unit}
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </SwiperSlide>
 
           <SwiperSlide className="flex justify-center items-center w-full ">
             <div className="w-full h-[200px] flex flex-col justify-center items-center">
-              <p>
+              <p className="mb-2">
                 <strong>Macronutriments</strong>
               </p>
               <p>Protéines: {meal.macronutrients.protein}g</p>
@@ -181,13 +181,13 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
               onChange={() => {}}
             />
             {showDayPicker && (
-              <div className="absolute mb-2 p-2 z-50 bottom-10 bg-white border border-gray-300 rounded-md shadow-lg">
+              <div className="absolute mb-2 p-2 z-50 bottom-10 bg-white border border-gray-300 rounded-md shadow-lg mb:w-full w-[300px] overflow-hidden">
                 <DayPicker
                   selected={selectedDate}
                   onSelect={handleDateChange}
                   locale={fr}
                   mode="single"
-                  className="p-2"
+                  className="mb:p-2overflow-x-auto"
                 />
               </div>
             )}

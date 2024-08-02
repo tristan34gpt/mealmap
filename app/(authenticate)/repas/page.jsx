@@ -33,7 +33,7 @@ function Page() {
     fetchMeals();
   }, []);
 
-  if (loading) {
+  if (!loading) {
     return <SkeletonMeals />;
   }
 
@@ -51,7 +51,7 @@ function Page() {
         Choisissez votre repas et régalez-vous.
       </h1>
 
-      <div className="border-b-[1px] border-gray-300 py-5">
+      <div className="border-b-[1px] border-gray-300 py-5 ">
         <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
           Repas
         </h3>
@@ -59,17 +59,17 @@ function Page() {
           modules={[Navigation, Pagination]}
           navigation
           pagination={{ clickable: true }}
-          spaceBetween={40}
-          slidesPerView={1}
+          spaceBetween={30}
+          slidesPerView={2} // Default slides per view
           centeredSlides={true}
           breakpoints={{
-            1024: {
-              slidesPerView: 2,
-              spaceBetween: 40,
+            320: {
+              slidesPerView: 1, // For widths 700px and up to 1024px
+              spaceBetween: 30,
             },
-            600: {
-              slidesPerView: 1,
-              spaceBetween: 20,
+            1024: {
+              slidesPerView: 2, // For widths 1024px and above
+              spaceBetween: 30,
             },
           }}
           className="swiper-container"
@@ -77,137 +77,127 @@ function Page() {
           {meals.map(
             (recipe) =>
               recipe.type === "repas" && (
-                <SwiperSlide
-                  key={recipe.id}
-                  className="flex justify-around items-center"
-                >
-                  <div
-                    className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
-                    onClick={() => handleOpenModal(recipe)}
-                  >
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="w-full h-[250px] object-cover"
-                    />
-                    <div className="text-center p-2">
-                      <p className="font-semibold text-primary-800">
-                        {recipe.title}
-                      </p>
+                <SwiperSlide key={recipe.id} className="  w-[auto] p-[50px] ">
+                  <div className=" flex justify-center items-center  ">
+                    <div
+                      className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden  cursor-pointer "
+                      onClick={() => handleOpenModal(recipe)}
+                    >
+                      <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        className=" md:w-full md:h-[250px] h-[200px] object-cover"
+                      />
+                      <div className="text-center p-2">
+                        <p className="font-semibold text-primary-800">
+                          {recipe.title}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>
               )
           )}
-          <div className="swiper-button-prev hidden md:block"></div>
-          <div className="swiper-button-next hidden md:block"></div>
-          <div className="swiper-pagination mt-5"></div>{" "}
         </Swiper>
       </div>
 
-      <div className="border-b-[1px] border-gray-300 py-5">
+      <div className="border-b-[1px] border-gray-300 py-5 ">
         <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
-          Desserts
+          Déjeuner
         </h3>
         <Swiper
           modules={[Navigation, Pagination]}
           navigation
           pagination={{ clickable: true }}
           spaceBetween={30}
-          slidesPerView={3}
+          slidesPerView={2} // Default slides per view
           centeredSlides={true}
           breakpoints={{
-            1024: {
-              slidesPerView: 2,
-              spaceBetween: 40,
+            320: {
+              slidesPerView: 1, // For widths 700px and up to 1024px
+              spaceBetween: 30,
             },
-            600: {
-              slidesPerView: 1,
-              spaceBetween: 20,
+            1024: {
+              slidesPerView: 2, // For widths 1024px and above
+              spaceBetween: 30,
             },
           }}
-          className="swiper-container py-10"
+          className="swiper-container"
         >
           {meals.map(
             (recipe) =>
               recipe.type === "déjeuner" && (
-                <SwiperSlide
-                  key={recipe.id}
-                  className="flex justify-around items-center"
-                >
-                  <div
-                    className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
-                    onClick={() => handleOpenModal(recipe)}
-                  >
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="w-full h-[250px] object-cover"
-                    />
-                    <div className="text-center p-2">
-                      <p className="font-semibold text-primary-800">
-                        {recipe.title}
-                      </p>
+                <SwiperSlide key={recipe.id} className="  w-[auto] p-[50px] ">
+                  <div className=" flex justify-center items-center  ">
+                    <div
+                      className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden  cursor-pointer "
+                      onClick={() => handleOpenModal(recipe)}
+                    >
+                      <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        className=" md:w-full md:h-[250px] h-[200px] object-cover"
+                      />
+                      <div className="text-center p-2">
+                        <p className="font-semibold text-primary-800">
+                          {recipe.title}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>
               )
           )}
-          <div className="swiper-button-prev hidden md:block"></div>
-          <div className="swiper-button-next hidden md:block"></div>
         </Swiper>
       </div>
 
-      <div className="py-5">
+      <div className="border-b-[1px] border-gray-300 py-5 ">
         <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
-          Pic nique
+          Pique-niques
         </h3>
         <Swiper
           modules={[Navigation, Pagination]}
           navigation
           pagination={{ clickable: true }}
           spaceBetween={30}
-          slidesPerView={3}
+          slidesPerView={2} // Default slides per view
           centeredSlides={true}
           breakpoints={{
-            1024: {
-              slidesPerView: 2,
-              spaceBetween: 40,
+            320: {
+              slidesPerView: 1, // For widths 700px and up to 1024px
+              spaceBetween: 30,
             },
-            600: {
-              slidesPerView: 1,
-              spaceBetween: 20,
+            1024: {
+              slidesPerView: 2, // For widths 1024px and above
+              spaceBetween: 30,
             },
           }}
-          className="swiper-container py-10"
+          className="swiper-container"
         >
           {meals.map(
             (recipe) =>
               recipe.type === "pique-nique" && (
-                <SwiperSlide
-                  key={recipe.id}
-                  className="flex justify-around items-center"
-                >
-                  <div
-                    className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden m-4 cursor-pointer"
-                    onClick={() => handleOpenModal(recipe)}
-                  >
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="w-full h-[250px] object-cover"
-                    />
-                    <div className="text-center p-2">
-                      <p className="font-semibold text-primary-800">
-                        {recipe.title}
-                      </p>
+                <SwiperSlide key={recipe.id} className="  w-[auto] p-[50px] ">
+                  <div className=" flex justify-center items-center  ">
+                    <div
+                      className="xl:w-[500px] md:w-[300px] w-[200px] bg-white shadow-md rounded-lg overflow-hidden  cursor-pointer "
+                      onClick={() => handleOpenModal(recipe)}
+                    >
+                      <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        className=" md:w-full md:h-[250px] h-[200px] object-cover"
+                      />
+                      <div className="text-center p-2">
+                        <p className="font-semibold text-primary-800">
+                          {recipe.title}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>
               )
           )}
-          <div className="swiper-button-prev hidden md:block"></div>
-          <div className="swiper-button-next hidden md:block"></div>
         </Swiper>
       </div>
 
