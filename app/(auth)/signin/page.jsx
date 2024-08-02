@@ -47,6 +47,17 @@ function Signin() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      // Google sign-in with redirection
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (e) {
+      toast.error("Une erreur s'est produite avec Google, veuillez réessayer.");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-[100vh] justify-center items-center">
       <h1 className="text-3xl font-medium mb-[40px]">Connectez-vous !</h1>
@@ -80,7 +91,7 @@ function Signin() {
       </form>
       <div className="border-b border-[1px] border-gray-300 w-[500px] mt-5 mb-5"></div>
       <button
-        onClick={() => signIn("google")}
+        onClick={handleGoogleSignIn}
         className="bg-white border border-1 rounded-lg p-3 w-[400px] mb-5  hover:bg-gray-200 transition-all"
       >
         Se connecter avec Google
