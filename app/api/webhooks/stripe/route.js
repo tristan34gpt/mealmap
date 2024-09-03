@@ -3,7 +3,7 @@ import Stripe from "stripe";
 
 const prisma = new PrismaClient();
 
-export const runtime = "edge"; // Utiliser 'edge' pour les fonctions edge
+// export const runtime = "edge"; // Utiliser 'edge' pour les fonctions edge
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-04-10",
