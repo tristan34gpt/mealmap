@@ -265,11 +265,11 @@ function Dashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // useEffect(() => {
+  //   const handleResize = () => setWindowWidth(window.innerWidth);
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
 
   if (loading) {
     return <SkeltonDashboard />;

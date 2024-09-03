@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 function SuccessPage() {
@@ -9,9 +10,9 @@ function SuccessPage() {
 
   useEffect(() => {
     if (token) {
-      fetch
-        .get(`/api/success`, { params: { token } })
-        .then((response) => setCustomerData(response.data))
+      fetch(`/api/success?token=${token}`)
+        .then((response) => response.json())
+        .then((data) => setCustomerData(data))
         .catch((error) => console.error(error));
     }
   }, [token]);
@@ -19,6 +20,7 @@ function SuccessPage() {
   if (!token) {
     return <div>Chargement...</div>;
   }
+
   return (
     <div>
       <h1>Paiement réussi !</h1>
@@ -31,11 +33,17 @@ function SuccessPage() {
         </div>
       ) : (
         <div>
-          <p>Chargement des donées...</p>
+          <p>Chargement des données...</p>
         </div>
       )}
     </div>
   );
 }
 
-export default SuccessPage;
+export default function SuccessPageWrapper() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <SuccessPage />
+    </Suspense>
+  );
+}
