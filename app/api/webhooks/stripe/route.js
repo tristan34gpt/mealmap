@@ -1,8 +1,6 @@
-import { buffer } from "micro";
 import Stripe from "stripe";
 
-// Désactivez le body parser pour cette route
-export const runtime = "edge"; // Pour les fonctions edge, sinon enlevez-le si vous n'utilisez pas l'environnement edge
+export const runtime = "edge"; // Utiliser 'edge' pour les fonctions edge
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-04-10",
@@ -10,9 +8,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export async function POST(req, res) {
-  const buf = await buffer(req);
-  const sig = req.headers["stripe-signature"];
+async function buffer(readable) {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
+export async function POST(req) {
+  const buf = await buffer(req.body);
+  const sig = req.headers.get("stripe-signature");
 
   let event;
 
