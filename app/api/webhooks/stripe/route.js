@@ -36,12 +36,13 @@ export async function POST(req) {
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object;
+      const userEmail = session.metadata.user_email; // Récupérer l'email de l'utilisateur
 
       // Ajouter la logique pour créer un abonnement dans la base de données
       try {
         // Récupérer l'utilisateur basé sur l'email du client Stripe (session.customer_email)
         const user = await prisma.user.findUnique({
-          where: { email: session.customer_email },
+          where: { email: userEmail },
         });
 
         if (user) {

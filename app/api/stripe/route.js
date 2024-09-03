@@ -56,7 +56,6 @@ export const POST = async (request) => {
     const checkOutSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer: customer.id,
-      customer_email: user.email,
       mode: "subscription",
       success_url: `https://localhost:3000/success?token=${customer.id}`,
       cancel_url: `https://localhost:3000/cancel?token=${customer.id}`,
@@ -75,6 +74,9 @@ export const POST = async (request) => {
           quantity: 1,
         },
       ],
+      metadata: {
+        user_email: user.email, // Stocker l'email de l'utilisateur ici
+      },
     });
 
     console.log("Session de paiement créée :", checkOutSession.url);
