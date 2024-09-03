@@ -3,7 +3,7 @@ import Stripe from "stripe";
 
 const prisma = new PrismaClient();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
   apiVersion: "2024-04-10",
 });
 
