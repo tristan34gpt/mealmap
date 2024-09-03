@@ -54,7 +54,7 @@ export async function POST(req) {
           where: { email: userEmail },
         });
 
-        const plan = await prisma.plan.findUnique({
+        const plan = await prisma.plan.findFirst({
           where: { name: productName }, // Utiliser le nom du produit pour trouver le plan
         });
 
