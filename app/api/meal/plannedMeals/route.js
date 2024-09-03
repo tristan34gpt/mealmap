@@ -20,6 +20,7 @@ export async function POST(req) {
     const plannedMeal = await prisma.plannedMeal.create({
       data: {
         userId,
+
         mealId,
         mealName,
         mealImage,

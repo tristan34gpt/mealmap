@@ -1,15 +1,14 @@
-// Meal.js
 import { User } from "lucide-react";
 
 function Meal({ img, title, quantity, click }) {
   return (
     <div
-      className="flex flex-col m-5 w-[300px] bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
+      className=" xl:w-[500px] md:w-[300px] w-[200px] flex flex-col m-5  bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
       onClick={click}
     >
       <div className="relative group">
         <img
-          className="rounded-lg w-full h-[250px] object-cover hover:opacity-40"
+          className="md:w-full md:h-[250px] h-[200px] object-cover hover:opacity-40"
           src={img}
           alt="image du repas"
         />

@@ -1,33 +1,37 @@
 import React, { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { fr } from "date-fns/locale";
-import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
-import Input from "./Input";
 import { Calendar, Timer } from "lucide-react";
-import Button from "./Button";
 import { useSession } from "next-auth/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import Confetti from "react-confetti-boom";
+
+import Input from "./Input";
+import Button from "./Button";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Loader from "./Loader";
+import "react-day-picker/dist/style.css";
 
 function ModalMealInfos({ isOpen, onClose, meal }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const [number, setNumber] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [isExploding, setIsExploding] = useState(false);
 
-  const { data: session } = useSession(); // Obtenez la session
-  console.log(meal);
+  const { data: session } = useSession();
+  console.log(meal.prepTime);
   if (!isOpen) return null;
   const handleSaveMeal = async () => {
     setLoading(true);
     if (meal && selectedDate) {
       try {
-        const userId = session?.user?.id; // Assurez-vous que l'utilisateur est authentifié et que l'ID est disponible
+        const userId = session?.user?.id;
 
         if (!userId) {
           alert("User not authenticated");
@@ -41,7 +45,8 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: session.user.id, // Passez l'ID de l'utilisateur authentifié
+            userId: session.user.id,
+
             mealId: meal.id,
             mealName: meal.title,
             mealImage: meal.image,
@@ -59,9 +64,11 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
         });
 
         if (response.ok) {
-          alert("Meal planned successfully!");
+          // alert("Meal planned successfully!");
           setLoading(false);
-          onClose();
+
+          setIsExploding(true);
+          // onClose();
         } else {
           alert("Failed to plan meal.");
           setLoading(false);
@@ -81,6 +88,20 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
   return (
     <div className="fixed z-50 inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg shadow-lg p-6  overflow-y-auto  custom-scrollbar w-full md:h-[800px] sm:h-[700px] h-[400px] max-w-md mx-4">
+        {/* {isExploding && (
+          <Confetti
+            x={0.5}
+            y={0.1}
+            particleCount={5}
+            deg={20}
+            shapeSize={8}
+            spreadDeg={5}
+            effectInterval={2000}
+            effectCount={3}
+            colors={["#ff577f", "#ff884b", "#ffd384", "#fff9b0", "#3498db"]}
+          />
+        )} */}
+
         <button
           className={` ${
             loading

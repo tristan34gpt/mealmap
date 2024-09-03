@@ -1,34 +1,41 @@
-import { authOptions } from "@/lib/AuthOptions";
-import { getServerSession } from "next-auth";
-
 import prisma from "@/lib/prisma"; // Utilisation de l'instance réutilisée
 
-export async function GET(req) {
-  let session;
+export async function POST(req) {
   try {
-    session = await getServerSession({ req, authOptions });
-  } catch (error) {
-    console.error("Error fetching session:", error);
-    return new Response(JSON.stringify({ message: "Error fetching session" }), {
-      status: 500,
-    });
-  }
+    // Parse the request body to get the user ID
+    const { userId } = await req.json();
 
-  if (!session) {
-    return new Response(JSON.stringify({ message: "Not authenticated" }), {
-      status: 401,
-    });
-  }
+    if (!userId) {
+      // Return a response with a 401 status if the user is not authenticated
+      return new Response(JSON.stringify({ message: "Not authenticated" }), {
+        status: 401,
+      });
+    }
 
-  try {
+    console.log("Received data:", { userId });
+
+    // Find the planned meals for the given user ID
     const plannedMeals = await prisma.plannedMeal.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
       },
     });
-    return new Response(JSON.stringify({ plannedMeals }), { status: 200 });
+
+    // Find the finished purchases for the given user ID
+    const shoppingFinished = await prisma.finishedPurchase.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Return the found data as a JSON response
+    return new Response(JSON.stringify({ plannedMeals, shoppingFinished }), {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error fetching planned meals:", error);
+
+    // Return a response with a 500 status if there's an error
     return new Response(
       JSON.stringify({ error: "Error fetching planned meals" }),
       { status: 500 }

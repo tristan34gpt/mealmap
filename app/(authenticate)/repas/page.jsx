@@ -33,7 +33,7 @@ function Page() {
     fetchMeals();
   }, []);
 
-  if (!loading) {
+  if (loading) {
     return <SkeletonMeals />;
   }
 

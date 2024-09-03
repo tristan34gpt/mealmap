@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-// import { DayPicker } from "react-day-picker";
-import { fr } from "date-fns/locale";
-import "react-day-picker/dist/style.css";
-import { format } from "date-fns";
-import Input from "./Input";
-import { Calendar, Timer } from "lucide-react";
-import Button from "./Button";
+import { Timer } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "react-day-picker/dist/style.css";
+
 import Loader from "./Loader";
 
 function ModalMealDashboard({ isOpen, onClose, meal }) {
@@ -112,31 +109,21 @@ function ModalMealDashboard({ isOpen, onClose, meal }) {
           <label className="text-[15px] mb-2" htmlFor="number">
             Pour {meal.number} personne
           </label>
-          {/* <input
-            type="number"
-            id="number"
-            min="1"
-            className={`bg-[#F9FAFB] border-[1px] w-[100px] h-[30px] rounded-[8px] pl-10 pr-4 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 `}
-            value={meal.number}
-            onChange={(e) => {
-              setNumber(e.target.value);
-            }}
-          /> */}
         </div>
         <Swiper
-          modules={[Navigation, Pagination]}
-          navigation
+          modules={[Pagination]}
           spaceBetween={0}
           slidesPerView={1}
           centeredSlides={true}
           className="w-full"
+          pagination={{ clickable: true }}
         >
           <SwiperSlide className="flex justify-center items-center">
             <div className="w-full h-[200px] flex flex-col justify-center items-center">
               <p className="mb-2">
                 <strong>Ingrédients</strong>
               </p>
-              <ul className="list-disc list-inside mb-4">
+              <ul className="flex justify-center items-center flex-col">
                 {meal.ingredients.map((ingredient, index) => (
                   <li key={index}>
                     {ingredient.name} - {ingredient.quantity * number}
@@ -168,44 +155,6 @@ function ModalMealDashboard({ isOpen, onClose, meal }) {
             </div>
           </SwiperSlide>
         </Swiper>
-
-        {/* <div className="mt-4">
-          <div className="relative rounded-md">
-            <Input
-              type="text"
-              placeholder="Sélectionnez une date"
-              Icon={Calendar}
-              label="Sélectionnez une date"
-              value={
-                selectedDate ? format(selectedDate, "PPP", { locale: fr }) : ""
-              }
-              onClick={() => setShowDayPicker(true)}
-              onChange={() => {}}
-            />
-            {showDayPicker && (
-              <div className="absolute mb-2 p-2 z-50 bottom-10 bg-white border border-gray-300 rounded-md shadow-lg">
-                <DayPicker
-                  selected={selectedDate}
-                  onSelect={handleDateChange}
-                  locale={fr}
-                  mode="single"
-                  className="p-2"
-                />
-              </div>
-            )}
-          </div>
-        </div> */}
-        {/* <div className="mt-4">
-          {loading ? (
-            <div className="w-full flex justify-center">
-              <Loader />
-            </div>
-          ) : (
-            <Button click={handleSaveMeal} className="w-[150px] h-[30px]">
-              Enregistrer
-            </Button>
-          )}
-        </div> */}
       </div>
     </div>
   );
