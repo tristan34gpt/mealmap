@@ -29,7 +29,7 @@ function Dashboard() {
   const [filteredMeals, setFilteredMeals] = useState([]);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(0);
   const [buttonInfosShopping, setButtonInfoShopping] = useState(false);
   const [finishedPurchase, setFinishedPurchase] = useState([]);
   const [ingrediantFinishedn, setIngrediantFinished] = useState([]);
@@ -254,6 +254,16 @@ function Dashboard() {
   useEffect(() => {
     fetchMeal();
   }, [status]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWindowWidth(window.innerWidth);
+
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
