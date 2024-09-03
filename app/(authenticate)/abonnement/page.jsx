@@ -20,7 +20,7 @@ function Subscription() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: "Abonnement mensuel",
+          title: "Plan Premium",
           price: 30,
           email: session.user.email, // Envoyer l'email de l'utilisateur
         }),

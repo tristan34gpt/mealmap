@@ -3,8 +3,6 @@ import Stripe from "stripe";
 
 const prisma = new PrismaClient();
 
-// export const runtime = "edge"; // Utiliser 'edge' pour les fonctions edge
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-04-10",
 });
@@ -38,19 +36,38 @@ export async function POST(req) {
       const session = event.data.object;
       const userEmail = session.metadata.user_email; // Récupérer l'email de l'utilisateur
 
+      // Récupérer les line items de la session
+      const lineItems = await stripe.checkout.sessions.listLineItems(
+        session.id
+      );
+      const productName = lineItems.data[0]?.description; // Le nom du produit se trouve dans la description
+
+      if (!productName) {
+        console.error("Product name not found");
+        return new Response(`Product name not found`, { status: 400 });
+      }
+
       // Ajouter la logique pour créer un abonnement dans la base de données
       try {
-        // Récupérer l'utilisateur basé sur l'email du client Stripe (session.customer_email)
+        // Récupérer l'utilisateur basé sur l'email du client Stripe
         const user = await prisma.user.findUnique({
           where: { email: userEmail },
         });
+
+        const plan = await prisma.plan.findUnique({
+          where: { name: productName }, // Utiliser le nom du produit pour trouver le plan
+        });
+
+        if (!plan) {
+          throw new Error("Plan not found");
+        }
 
         if (user) {
           // Créer l'abonnement dans la base de données
           await prisma.subscription.create({
             data: {
               userId: user.id,
-              planId: "VotrePlanIdIci", // Remplacez par l'ID de votre plan réel
+              planId: plan.id, // Utilisez l'ID du plan trouvé
               status: "ACTIVE",
               startDate: new Date(),
             },
@@ -58,7 +75,7 @@ export async function POST(req) {
 
           console.log(`Subscription added for user: ${user.email}`);
         } else {
-          console.error(`User not found for email: ${session.customer_email}`);
+          console.error(`User not found for email: ${userEmail}`);
         }
       } catch (error) {
         console.error(`Failed to create subscription: ${error.message}`);
