@@ -1,4 +1,7 @@
+import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
+
+const prisma = new PrismaClient();
 
 export const runtime = "edge"; // Utiliser 'edge' pour les fonctions edge
 
@@ -33,17 +36,39 @@ export async function POST(req) {
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object;
-      console.log(`Payment successful for session: ${session.id}`);
-      // Logique pour mettre à jour la base de données ou envoyer un email
+
+      // Ajouter la logique pour créer un abonnement dans la base de données
+      try {
+        // Récupérer l'utilisateur basé sur l'email du client Stripe (session.customer_email)
+        const user = await prisma.user.findUnique({
+          where: { email: session.customer_email },
+        });
+
+        if (user) {
+          // Créer l'abonnement dans la base de données
+          await prisma.subscription.create({
+            data: {
+              userId: user.id,
+              planId: "VotrePlanIdIci", // Remplacez par l'ID de votre plan réel
+              status: "ACTIVE",
+              startDate: new Date(),
+            },
+          });
+
+          console.log(`Subscription added for user: ${user.email}`);
+        } else {
+          console.error(`User not found for email: ${session.customer_email}`);
+        }
+      } catch (error) {
+        console.error(`Failed to create subscription: ${error.message}`);
+      }
       break;
 
     case "invoice.payment_succeeded":
       const invoice = event.data.object;
       console.log(`Invoice payment succeeded: ${invoice.id}`);
-      // Logique pour gérer le succès du paiement d'une facture
       break;
 
-    // Ajoutez d'autres types d'événements que vous souhaitez gérer
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
