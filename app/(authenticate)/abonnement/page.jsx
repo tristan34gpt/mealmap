@@ -3,10 +3,26 @@
 import Button from "@/app/components/Button";
 import { useSession } from "next-auth/react";
 import { Check } from "lucide-react"; // Importer l'icône Check depuis lucide-react
+import { useEffect, useState } from "react";
+import Loader from "@/app/components/Loader";
 
 function Subscription() {
   const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [plan, setPlan] = useState(null);
 
+  useEffect(() => {
+    if (session && session.user) {
+      console.log(session.user);
+      setPlan(session.user.plan);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (plan !== null) {
+      setLoading(false);
+    }
+  }, [plan]);
   const checkout = async () => {
     try {
       // Vérifier si l'utilisateur est authentifié
@@ -66,13 +82,28 @@ function Subscription() {
           <p className="mt-5 text-lg font-semibold text-gray-700">
             Prix : Gratuit
           </p>
-          <Button
-            className="mt-5 w-[150px] h-[40px]"
-            onClick={checkout}
-            disabled={status !== "authenticated"}
-          >
-            Choisir
-          </Button>
+          {loading ? (
+            <div className="flex items-center justify-center mt-2">
+              <Loader />
+            </div>
+          ) : plan !== "Plan freemium" ? (
+            <Button
+              className="mt-5 w-[150px] h-[40px]"
+              click={checkout}
+              disabled={status !== "authenticated"}
+            >
+              Choisir
+            </Button>
+          ) : (
+            <Button
+              className={
+                "mt-5 w-[150px] h-[40px] bg-green-600 hover:bg-green-600"
+              }
+              disabled
+            >
+              Plan actuel
+            </Button>
+          )}
         </div>
         <div className="ml-5 border p-6 rounded-lg text-center bg-white shadow-lg">
           <h2 className="text-xl font-semibold text-gray-700 mt-2">
@@ -103,13 +134,27 @@ function Subscription() {
           <p className="mt-5 text-lg font-semibold text-gray-700">
             Prix : 5.99€/mois
           </p>
-          <Button
-            className="mt-5 w-[150px] h-[40px]"
-            click={checkout}
-            disabled={status !== "authenticated"}
-          >
-            Choisir
-          </Button>
+          {loading ? (
+            <div className="flex items-center justify-center mt-2">
+              <Loader />
+            </div>
+          ) : plan !== "Plan Premium" ? (
+            <Button
+              className="mt-5 w-[150px] h-[40px]"
+              click={checkout}
+              disabled={status !== "authenticated"}
+            >
+              Choisir
+            </Button>
+          ) : (
+            <Button
+              className={
+                "mt-5 w-[150px] h-[40px] bg-green-600 hover:bg-green-600"
+              }
+            >
+              Plan actuel
+            </Button>
+          )}
         </div>
       </div>
     </>

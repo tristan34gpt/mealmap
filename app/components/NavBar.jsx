@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Button from "./Button";
 import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const linkNavBar = [
     {
@@ -28,8 +30,8 @@ function NavBar() {
   return (
     <div className="border-b border-1 mb-5 relative">
       <nav className="flex items-center justify-between p-5">
-        <Link href={"/dashboard"} className="text-xl font-bold">
-          Logo
+        <Link href="/dashboard" className="text-xl font-bold">
+          <img className="w-[50px] ml-5" src="/logo.png" alt="Logo" />
         </Link>
         <div className="lg:hidden">
           <button
@@ -66,7 +68,11 @@ function NavBar() {
             <li key={index}>
               <Link
                 href={link.link}
-                className="text-gray-800 hover:text-gray-600"
+                className={`${
+                  pathname === link.link
+                    ? "text-primary-700 font-bold border-b-2 border-primary-700" // Classe active
+                    : "text-gray-800 hover:text-gray-600"
+                } transition duration-300`} // Ajout de transition pour un effet fluide
               >
                 {link.label}
               </Link>
@@ -83,13 +89,17 @@ function NavBar() {
         </ul>
       </nav>
       {isOpen && (
-        <div className="fixed inset-x-0 z-50  bg-white p-5 shadow-lg lg:hidden">
+        <div className="fixed inset-x-0 z-50 bg-white p-5 shadow-lg lg:hidden">
           <ul className="flex flex-col items-center space-y-4">
             {linkNavBar.map((link, index) => (
               <li key={index}>
                 <Link
                   href={link.link}
-                  className="text-gray-800 hover:text-gray-600"
+                  className={`${
+                    pathname === link.link
+                      ? "text-primary-700 font-bold border-b-2 border-primary-700"
+                      : "text-gray-800 hover:text-gray-600"
+                  } transition duration-300`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}

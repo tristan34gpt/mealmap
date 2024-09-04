@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 async function main() {
   const plan = await prisma.plan.create({
     data: {
-      name: "Plan Premium", // Nom du plan
-      price: 5.99, // Prix en euros
+      name: "Plan freemium", // Nom du plan
+      price: 0.0, // Prix en euros
       interval: "month", // Intervalle de facturation (par exemple, 'month' ou 'year')
     },
   });

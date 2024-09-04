@@ -113,7 +113,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
   };
 
   useEffect(() => {
-    const fetchMeals = async () => {
+    const fetchSubscription = async () => {
       try {
         const response = await fetch("/api/subscription", {
           method: "POST",
@@ -193,7 +193,7 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
       }
     };
 
-    fetchMeals();
+    fetchSubscription();
   }, []);
 
   return (

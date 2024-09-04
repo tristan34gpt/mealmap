@@ -47,12 +47,18 @@ function Page() {
 
   return (
     <div className="p-4">
-      <h1 className="font-semibold mb-8 text-2xl text-gray-900 text-center">
-        Choisissez votre repas et régalez-vous.
+      <h1 className=" font-semibold mb-8 text-2xl text-gray-800 text-center">
+        Choisissez votre{" "}
+        <span className="text-primary-700 text-3xl underline-offset-2">
+          {" "}
+          repas
+        </span>{" "}
+        et
+        <span className="text-primary-700 text-3xl"> régalez-vous.</span>
       </h1>
 
       <div className="border-b-[1px] border-gray-300 py-5 ">
-        <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
+        <h3 className=" text-2xl font-medium text-gray-700 mb-5 text-center">
           Repas
         </h3>
         <Swiper
@@ -102,7 +108,7 @@ function Page() {
       </div>
 
       <div className="border-b-[1px] border-gray-300 py-5 ">
-        <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
+        <h3 className="text-2xl font-medium text-gray-700 mb-5 text-center">
           Déjeuner
         </h3>
         <Swiper
@@ -152,7 +158,7 @@ function Page() {
       </div>
 
       <div className="border-b-[1px] border-gray-300 py-5 ">
-        <h3 className="text-xl font-medium text-gray-700 mb-5 text-center">
+        <h3 className="text-2xl font-medium text-gray-700 mb-5 text-center">
           Pique-niques
         </h3>
         <Swiper
