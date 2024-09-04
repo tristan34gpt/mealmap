@@ -17,7 +17,7 @@ export default function Footer() {
           </Link>
           <Link
             className=" text-[18px] flex items-center hover:text-primary-500 transition-all hover:underline"
-            href={"/"}
+            href={"/abonnement"}
           >
             <Wallet size={25} className="mr-2" />
             Abonnement

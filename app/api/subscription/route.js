@@ -14,33 +14,23 @@ export async function POST(req) {
 
     console.log("Received data:", { userId });
 
-    // Find the planned meals for the given user ID
-    const plannedMeals = await prisma.plannedMeal.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-
-    // Find the finished purchases for the given user ID
-    const shoppingFinished = await prisma.finishedPurchase.findMany({
+    // Find the subscription  for the given user ID
+    const subscription = await prisma.subscription.findMany({
       where: {
         userId: userId,
       },
     });
 
     // Return the found data as a JSON response
-    return new Response(JSON.stringify({ plannedMeals, shoppingFinished }), {
+    return new Response(JSON.stringify({ subscription }), {
       status: 200,
     });
   } catch (error) {
-    console.error("Error fetching planned meals:", error.message, error.stack);
+    console.error("Error fetching subscription :", error);
 
     // Return a response with a 500 status if there's an error
     return new Response(
-      JSON.stringify({
-        error: "Error fetching planned meals",
-        details: error.message,
-      }),
+      JSON.stringify({ error: "Error fetching subscription " }),
       { status: 500 }
     );
   }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { fr } from "date-fns/locale";
 import { format } from "date-fns";
@@ -23,12 +23,14 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
   const [number, setNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
+  const [limit, setLimit] = useState(null);
 
   const { data: session } = useSession();
   console.log(meal.prepTime);
   if (!isOpen) return null;
   const handleSaveMeal = async () => {
     setLoading(true);
+
     if (meal && selectedDate) {
       try {
         const userId = session?.user?.id;
@@ -39,6 +41,9 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           return;
         }
 
+        // Obtenir la date d'aujourd'hui
+        const currentDate = new Date();
+
         const response = await fetch("/api/meal/plannedMeals", {
           method: "POST",
           headers: {
@@ -46,7 +51,6 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           },
           body: JSON.stringify({
             userId: session.user.id,
-
             mealId: meal.id,
             mealName: meal.title,
             mealImage: meal.image,
@@ -60,15 +64,14 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
             recipe: meal.recipe,
             description: meal.description,
             macronutrients: meal.macronutrients,
+            prepTime: meal.prepTime,
+            datePlanned: currentDate.toISOString(), // Ajout de la date de planification (aujourd'hui)
           }),
         });
 
         if (response.ok) {
-          // alert("Meal planned successfully!");
           setLoading(false);
-
-          setIsExploding(true);
-          // onClose();
+          setIsExploding(true); // Optionnel pour l'animation de réussite
         } else {
           alert("Failed to plan meal.");
           setLoading(false);
@@ -80,10 +83,118 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
     }
   };
 
+  function getCurrentWeekDates() {
+    const today = new Date();
+
+    // Calculez le jour de la semaine (0 = dimanche, 1 = lundi, etc.)
+    const dayOfWeek = today.getDay();
+
+    // Si aujourd'hui est dimanche (0), le ramener au dernier jour (7) pour faciliter le calcul
+    const dayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    // Obtenez la date du lundi (premier jour de la semaine)
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - dayOffset);
+
+    // Créez un tableau contenant toutes les dates de la semaine (lundi à dimanche)
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const currentDay = new Date(monday);
+      currentDay.setDate(monday.getDate() + i);
+      weekDates.push(currentDay);
+    }
+
+    return weekDates;
+  }
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setShowDayPicker(false);
   };
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      try {
+        const response = await fetch("/api/subscription", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: session.user.id, // Pass the authenticated user's ID
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+
+        const data = await response.json();
+
+        // Vérifiez si la propriété 'subscription' existe et n'est pas vide
+        if (data.subscription && data.subscription.length > 0) {
+          // Accédez au statut du premier abonnement
+          console.log(data.subscription[0].status);
+          if (
+            data.subscription[0].status !== "ACTIVE" &&
+            data.subscription[0].planId !== "66d74381dab92501fb416af9"
+          ) {
+            console.log(session.user.id);
+            const mealResponse = await fetch("/api/meal/fetchPlannedMeal", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: session.user.id, // Pass the authenticated user's ID
+              }),
+            });
+
+            if (!mealResponse.ok) {
+              throw new Error(
+                "Meal fetch response was not ok " + mealResponse.statusText
+              );
+            }
+
+            const mealData = await mealResponse.json();
+            console.log(mealData);
+
+            // Obtenez les dates de la semaine actuelle (lundi à dimanche)
+            const currentWeekDates = getCurrentWeekDates();
+
+            // Filtrer les repas planifiés qui sont dans cette semaine
+            const mealsThisWeek = mealData.plannedMeals.filter((meal) => {
+              const mealDate = new Date(meal.datePlanned);
+              return currentWeekDates.some(
+                (weekDate) =>
+                  mealDate.getFullYear() === weekDate.getFullYear() &&
+                  mealDate.getMonth() === weekDate.getMonth() &&
+                  mealDate.getDate() === weekDate.getDate()
+              );
+            });
+
+            // Vérifiez si plus de 2 repas sont planifiés cette semaine
+            if (mealsThisWeek.length >= 2) {
+              console.log(
+                "Plus de 2 planifications de repas pour cette semaine."
+              );
+              setLimit(true);
+            } else {
+              setLimit(false);
+            }
+          } else {
+            setLimit(false);
+          }
+        } else {
+          console.log("No subscription found.");
+        }
+      } catch (error) {
+        console.error("Error fetching subscription:", error);
+      }
+    };
+
+    fetchMeals();
+  }, []);
 
   return (
     <div className="fixed z-50 inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
@@ -215,7 +326,13 @@ function ModalMealInfos({ isOpen, onClose, meal }) {
           </div>
         </div>
         <div className="mt-4">
-          {loading ? (
+          {limit == null ? (
+            <p className="text-center">Vérification ...</p>
+          ) : limit ? (
+            <p className="text-center">
+              Passer à la version premium pour planifier plus de repas
+            </p>
+          ) : loading ? (
             <div className="w-full flex justify-center">
               <Loader />
             </div>

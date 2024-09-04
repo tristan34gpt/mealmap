@@ -22,8 +22,10 @@ function page() {
 
   return (
     <div className="mt-[70px]">
-      <h1 className=" font-semibold m-5">Information du profil</h1>
-      <div className="flex justify-around flex-wrap p-5">
+      <h1 className=" font-semibold m-5 text-center text-gray-700 text-[20px]">
+        Information du profil
+      </h1>
+      <div className="flex  flex-col justify-center items-center p-5">
         <Input
           type="email"
           placeholder="john@gmail.com"
@@ -31,6 +33,7 @@ function page() {
           label="Mail"
           value={session.user.email}
           disabled={"disabled"}
+          className={"mb-5"}
         />
         <Input
           type="password"
@@ -38,6 +41,7 @@ function page() {
           Icon={LockKeyhole}
           label="Mot de passe"
           disabled={"disabled"}
+          className={"mb-5"}
         />
         <Input
           type="text"
@@ -46,6 +50,7 @@ function page() {
           label="Prénom"
           value={session.user.firstName}
           disabled={"disabled"}
+          className={"mb-5"}
         />
         <Input
           type="text"
