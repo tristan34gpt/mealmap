@@ -84,9 +84,20 @@ function Signin() {
         {loading ? (
           <div>chargement...</div>
         ) : (
-          <Button type="submit" className="w-[300px] h-[40px]">
-            Se connecter
-          </Button>
+          <>
+            <Button type="submit" className="w-[300px] h-[40px]">
+              Se connecter
+            </Button>
+
+            <p className="mt-3 text-[15px]">
+              Mot de passe oublier ?{" "}
+              <Link href="/resetPassword/sendEmail">
+                <span className="text-[1.1em] underline text-primary-700">
+                  ici
+                </span>
+              </Link>
+            </p>
+          </>
         )}
       </form>
       <div className="border-b border-[1px] border-gray-300 w-[500px] mt-5 mb-5"></div>

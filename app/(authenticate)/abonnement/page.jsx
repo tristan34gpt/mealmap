@@ -97,7 +97,7 @@ function Subscription() {
           ) : (
             <Button
               className={
-                "mt-5 w-[150px] h-[40px] bg-green-600 hover:bg-green-600"
+                "mt-5 w-[150px] h-[40px] bg-green-500 hover:bg-green-500"
               }
               disabled
             >
@@ -149,7 +149,7 @@ function Subscription() {
           ) : (
             <Button
               className={
-                "mt-5 w-[150px] h-[40px] bg-green-600 hover:bg-green-600"
+                "mt-5 w-[150px] h-[40px] bg-green-500 hover:bg-green-500"
               }
             >
               Plan actuel
