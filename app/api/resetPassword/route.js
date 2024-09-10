@@ -14,12 +14,28 @@ export async function POST(request) {
   // Vérifier si l'utilisateur existe
   const user = await prisma.user.findUnique({
     where: { email },
+    include: { accounts: true }, // Inclure les comptes pour vérifier le type de connexion
   });
 
   if (!user) {
     return NextResponse.json(
       { message: "Utilisateur non trouvé" },
       { status: 404 }
+    );
+  }
+
+  // Vérifier s'il existe un compte de type 'credentials'
+  const credentialsAccount = user.accounts.find(
+    (account) => account.type === "credentials"
+  );
+
+  if (!credentialsAccount) {
+    return NextResponse.json(
+      {
+        message:
+          "Cet utilisateur n'utilise pas de mot de passe, mais OAuth. Réinitialisation impossible.",
+      },
+      { status: 400 }
     );
   }
 
