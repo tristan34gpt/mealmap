@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // Assurez-vous que Prisma est configuré
+import prisma from "@/lib/prisma";
 import crypto from "crypto";
 
 // Fonction utilitaire pour générer un jeton sécurisé
@@ -23,11 +23,11 @@ export async function POST(request) {
     );
   }
 
-  // Générer un jeton de réinitialisation et son expiration (1 heure)
+  // Générer un nouveau jeton de réinitialisation s'il n'en existe pas déjà un
   const resetToken = generateToken();
-  const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 heure
+  const resetTokenExpiry = new Date(Date.now() + 3600000); // Expiration dans 1 heure
 
-  // Mettre à jour l'utilisateur avec le jeton de réinitialisation
+  // Mettre à jour l'utilisateur avec le nouveau resetToken
   await prisma.user.update({
     where: { email },
     data: {
@@ -39,7 +39,7 @@ export async function POST(request) {
   // Lien de réinitialisation
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}?token=${resetToken}`;
 
-  // Envoyer l'email avec Nodemailer
+  // Envoi de l'email avec Nodemailer
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -47,7 +47,7 @@ export async function POST(request) {
       pass: process.env.EMAIL_PASS,
     },
     tls: {
-      rejectUnauthorized: false, // Désactiver la vérification stricte des certificats
+      rejectUnauthorized: false,
     },
   });
 

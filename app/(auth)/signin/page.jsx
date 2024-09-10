@@ -110,10 +110,6 @@ function Signin() {
       >
         Se connecter avec Google
       </button>
-      <button className="bg-white border border-1 rounded-lg p-3 w-[400px] hover:bg-gray-200 transition-all">
-        Se connecter avec GitHub
-      </button>
-
       <p className="mt-2">
         Vous n’avez pas de compte ?{" "}
         <Link href="/signup">
