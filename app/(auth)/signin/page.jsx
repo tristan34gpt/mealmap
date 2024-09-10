@@ -36,6 +36,7 @@ function Signin() {
       toast.success("Vous êtes connecté");
       if (result.error) {
         setError("Email ou Mot de passe invalide");
+        toast.error("Email ou Mot de passe invalide");
         setLoading(false);
       } else {
         router.push("/dashboard");
@@ -54,6 +55,8 @@ function Signin() {
       await signIn("google", { callbackUrl: "/dashboard" });
     } catch (e) {
       toast.error("Une erreur s'est produite avec Google, veuillez réessayer.");
+      console.error("Error during sign-in:", e); // Log de l'erreur
+
       setLoading(false);
     }
   };
