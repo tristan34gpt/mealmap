@@ -33,7 +33,7 @@ export async function POST(request) {
     return NextResponse.json(
       {
         message:
-          "Cet utilisateur n'utilise pas de mot de passe, mais OAuth. Réinitialisation impossible.",
+          "Vous ne pouvez pas modifier votre mot de passe car vous avez utilisé Google pour votre inscription.",
       },
       { status: 400 }
     );

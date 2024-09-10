@@ -37,7 +37,7 @@ function Subscription() {
         },
         body: JSON.stringify({
           title: "Plan Premium",
-          price: 30,
+          price: 4.99,
           email: session.user.email, // Envoyer l'email de l'utilisateur
         }),
       });

@@ -53,7 +53,7 @@ export async function POST(req) {
       return new Response(
         JSON.stringify({
           message:
-            "Cet utilisateur ne peut pas réinitialiser le mot de passe car il utilise OAuth.",
+            "Vous ne pouvez pas modifier votre mot de passe car vous avez utilisé Google pour votre inscription.",
         }),
         {
           status: 400,
