@@ -3,17 +3,43 @@
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
 import ModalProfile from "@/app/components/ModalProfile";
+import SkeletonProfile from "@/app/components/skeleton/SkeletonProfile";
 
 import { LockKeyhole, Mail, User } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function page() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   console.log(session);
-  if (status === "loading") {
-    return <div>Loading...</div>;
+
+  // if (status !== "loading") {
+  //   return (
+  //     <div>
+  //       <SkeletonProfile />
+  //     </div>
+  //   );
+  // }
+
+  useEffect(() => {
+    // Si la session est en cours de chargement ou l'utilisateur est absent, affiche le skeleton
+    if (status === "loading" || !session?.user) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [session, status]);
+
+  // Si la session est en cours de chargement ou l'utilisateur n'est pas encore chargé, afficher le SkeletonProfile
+  if (loading) {
+    return (
+      <div>
+        <SkeletonProfile />
+      </div>
+    );
   }
 
   const handleCloseModal = () => {
