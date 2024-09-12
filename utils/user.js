@@ -24,6 +24,13 @@ export async function createUserWithAccount({
             provider: "email",
             providerAccountId: uuidv4(),
           },
+          subscriptions: {
+            create: {
+              planId: freemiumPlan.id, // Associe le plan freemium
+              status: "ACTIVE",
+              startDate: new Date(),
+            },
+          },
         },
       },
       include: {
