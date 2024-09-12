@@ -17,6 +17,7 @@ model User {
    resetToken        String?       @unique
    name              String?
   resetTokenExpiry  DateTime?  
+   emailVerified     DateTime? 
   sessions          Session[]           @relation("UserSessions")
   accounts          Account[]           @relation("UserAccounts")
   plannedMeals      PlannedMeal[]       @relation("UserPlannedMeals")
