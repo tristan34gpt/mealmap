@@ -27,17 +27,19 @@ export async function createUserWithAccount({
             provider: "email",
             providerAccountId: uuidv4(),
           },
-          subscriptions: {
-            create: {
-              planId: freemiumPlan.id, // Associe le plan freemium
-              status: "ACTIVE",
-              startDate: new Date(),
-            },
-          },
         },
       },
       include: {
         accounts: true,
+      },
+    });
+
+    await prisma.subscription.create({
+      data: {
+        userId: newUser.id,
+        planId: freemiumPlan.id,
+        status: "ACTIVE",
+        startDate: new Date(),
       },
     });
     console.log("New user created:", newUser); // Log pour vérifier le nouvel utilisateur
