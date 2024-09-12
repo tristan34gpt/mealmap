@@ -10,6 +10,9 @@ export async function createUserWithAccount({
   email,
 }) {
   try {
+    const freemiumPlan = await prisma.plan.findFirst({
+      where: { name: "Plan freemium" },
+    });
     console.log("Creating user with email:", email); // Log pour vérifier les données
     const hashedPassword = await bcrypt.hash(password, 10); // Hachage du mot de passe
     const newUser = await prisma.user.create({
