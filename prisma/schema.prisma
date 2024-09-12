@@ -15,6 +15,7 @@ model User {
   password          String?
   image             String?
    resetToken        String?       @unique
+   name              String?
   resetTokenExpiry  DateTime?  
   sessions          Session[]           @relation("UserSessions")
   accounts          Account[]           @relation("UserAccounts")
