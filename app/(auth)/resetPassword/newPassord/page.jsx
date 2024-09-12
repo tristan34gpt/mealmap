@@ -45,7 +45,7 @@ function Page() {
 
       if (response.status === 200) {
         setMessage("Mot de passe réinitialisé avec succès.");
-        router.push("/login");
+        router.push("/signin");
       } else {
         setError(data.message || "Erreur lors de la réinitialisation.");
       }
