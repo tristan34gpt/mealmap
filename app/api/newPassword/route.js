@@ -64,8 +64,9 @@ export async function POST(req) {
     // Si l'utilisateur a un compte credentials, réinitialiser le mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Mettre à jour l'utilisateur avec son id
     await prisma.user.update({
-      where: { resetToken: token },
+      where: { id: user.id }, // Utiliser l'ID de l'utilisateur trouvé
       data: {
         password: hashedPassword,
         resetToken: null, // Supprimer le resetToken après réinitialisation
